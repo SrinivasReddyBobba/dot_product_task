@@ -40,6 +40,8 @@ export default function Mboard() {
                 const bud = budgetData.users;
                 const employee = employeeData.users;
 
+                console.log(budgetData,employeeData,"both")
+                console.log(bud,employee,"both1")
                 if (bud && Array.isArray(bud)) {
                     const totalBudgetCalc = bud.reduce((sum, item) => {
                         return sum + (parseFloat(item.income) || 0);
