@@ -12,7 +12,7 @@ export default function Mboard() {
     const [totalExpense, setTotalExpense] = useState(0);
     const [userName, setUserName] = useState(null);
     const [loading, setLoading] = useState(false);
-
+  console.log(userName,"mainuser")
     const areaChartRef = useRef(null);
     const pieChartRef = useRef(null);
 
@@ -63,9 +63,9 @@ export default function Mboard() {
 
         fetchMainData();
     }, []);
-    // console.log(totalBudget, "bu")
-    // console.log(totalExpense, "bu")
-    // console.log(totalIncome, "bu")
+    console.log(totalBudget, "totalBudget")
+    console.log(totalExpense, "totalExpense")
+    console.log(totalIncome, "totalIncome")
 
     useEffect(() => {
         if (!loading && (totalBudget || totalIncome || totalExpense)) {
