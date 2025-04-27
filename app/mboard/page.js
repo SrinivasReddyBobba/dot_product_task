@@ -17,6 +17,7 @@ export default function Mboard() {
     const pieChartRef = useRef(null);
 
     useEffect(() => {
+        // This code will only run on the client side (after the component mounts)
         const storedUserName = localStorage.getItem("userName");
         if (storedUserName) {
           setUserName(storedUserName);
