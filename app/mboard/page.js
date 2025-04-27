@@ -62,7 +62,9 @@ export default function Mboard() {
 
         fetchMainData();
     }, []);
+    // console.log(totalBudget, "bu")
     // console.log(totalExpense, "bu")
+    // console.log(totalIncome, "bu")
 
     useEffect(() => {
         if (!loading && (totalBudget || totalIncome || totalExpense)) {
