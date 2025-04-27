@@ -22,7 +22,7 @@ export default function Mboard() {
         if (storedUserName) {
           setUserName(storedUserName);
         }
-      }, []);
+      }, [userName]);
 
     const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
     useEffect(() => {
