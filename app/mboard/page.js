@@ -10,26 +10,26 @@ export default function Mboard() {
     const [totalBudget, setTotalBudget] = useState(0);
     const [totalIncome, setTotalIncome] = useState(0);
     const [totalExpense, setTotalExpense] = useState(0);
-    const [userName, setUserName] = useState(null);
+    // const [userName, setUserName] = useState(null);
     const [loading, setLoading] = useState(false);
-  console.log(userName,"mainuser")
     const areaChartRef = useRef(null);
     const pieChartRef = useRef(null);
 
-    useEffect(() => {
-        // This code will only run on the client side (after the component mounts)
-        const storedUserName = localStorage.getItem("userName");
-        if (storedUserName) {
-          setUserName(storedUserName);
-        }
-      }, [userName]);
+    let userName = typeof window !== "undefined" ? localStorage.getItem("userName") : "";
+    // useEffect(() => {
+    //     // This code will only run on the client side (after the component mounts)
+    //     const storedUserName = localStorage.getItem("userName");
+    //     if (storedUserName) {
+    //       setUserName(storedUserName);
+    //     }
+    //   }, [userName]);
 
     const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
     useEffect(() => {
         async function fetchMainData() {
             try {
                 setLoading(true);
-
+                // console.log(userName,"inside use effect")
                 const [budgetRes, employeeRes] = await Promise.all([
                     fetch(`/api/allbudgetget?userName=${userName}`),
                     fetch(`/api/allemployeeget?userName=${userName}`)
@@ -40,8 +40,8 @@ export default function Mboard() {
                 const bud = budgetData.users;
                 const employee = employeeData.users;
 
-                console.log(budgetData,employeeData,"both")
-                console.log(bud,employee,"both1")
+                // console.log(budgetData,employeeData,"both")
+                // console.log(bud,employee,"both1")
                 if (bud && Array.isArray(bud)) {
                     const totalBudgetCalc = bud.reduce((sum, item) => {
                         return sum + (parseFloat(item.income) || 0);
@@ -64,10 +64,10 @@ export default function Mboard() {
         }
 
         fetchMainData();
-    }, []);
-    console.log(totalBudget, "totalBudget")
-    console.log(totalExpense, "totalExpense")
-    console.log(totalIncome, "totalIncome")
+    }, [userName]);
+    // console.log(totalBudget, "totalBudget")
+    // console.log(totalExpense, "totalExpense")
+    // console.log(totalIncome, "totalIncome")
 
     useEffect(() => {
         if (!loading && (totalBudget || totalIncome || totalExpense)) {
