@@ -25,7 +25,6 @@ export default function Mboard() {
       }, []);
 
     const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
-    // let userName = localStorage.getItem("userName");
     useEffect(() => {
         async function fetchMainData() {
             try {
