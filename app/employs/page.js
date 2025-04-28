@@ -18,12 +18,11 @@ export default function Employee() {
     const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : "";
     // console.log(userName, "check")
     const [formData, setFormData] = useState({
-        username: userName || '',
+        username:'',
         categories: '',
         expense: '',
         income: '',
         accessdate: '',
-        // userstatus: '',
     });
 
     const [rowData, setRowData] = useState([]);
@@ -52,7 +51,13 @@ export default function Employee() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const latestUserName = typeof window !== "undefined" ? localStorage.getItem("userName") || '' : '';
+      console.log(latestUserName,"latedst")
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            username: latestUserName,
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -64,7 +69,6 @@ export default function Employee() {
             expense: formData.expense,
             income: formData.income,
             dashboardaccessdate: formData.accessdate,
-            //   userstatus: formData.userstatus,
         };
 
         try {
@@ -75,7 +79,6 @@ export default function Employee() {
             });
 
             if (response.ok) {
-                alert('Added  successfully!');
                 const offcanvasElement = document.getElementById('offcanvasExampleuser');
                 const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
                 offcanvasInstance.hide();

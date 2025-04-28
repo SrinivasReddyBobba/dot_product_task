@@ -15,13 +15,14 @@ export default function Employee() {
     const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
     const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : "";
     const [selectedId, setSelectedId] = useState(null);
-    // console.log(selectedId, "check")
     const [formData, setFormData] = useState({
         person: '',
         income: '',
         accessdate: '',
-        username: userName || '',
+        username: '',
     });
+
+    console.log(formData,"gg")
     const [rowData, setRowData] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
     useEffect(() => {
@@ -42,20 +43,30 @@ export default function Employee() {
             console.error('Error fetching user data:', error);
         }
     };
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setFormData(prev => ({ ...prev, [name]: value }));
+    // };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const latestUserName = typeof window !== "undefined" ? localStorage.getItem("userName") || '' : '';
+      console.log(latestUserName,"latedst")
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            username: latestUserName, 
+        }));
     };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const payload = {
             person: formData.person,
-            userName: formData.username,
-            categories: formData.categories,
-            expense: formData.expense,
-            income: formData.income,
-            dashboardaccessdate: formData.accessdate,
+            income: formData.incomeperson,
+            dashboardaccessdate: formData.accessdateperson,
+            userName: formData.usernameperson,
         };
         // console.log(payload, "pay")
         try {
@@ -66,7 +77,7 @@ export default function Employee() {
             });
 
             if (response.ok) {
-                alert('Added  successfully!');
+                // alert('Added  successfully!');
                 const offcanvasElement = document.getElementById('offcanvasExampleuser');
                 const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
                 offcanvasInstance.hide();
@@ -87,11 +98,8 @@ export default function Employee() {
         setIsEditMode(true);
         setFormData({
             person: userData.person || '',
-            categories: userData.categories || '',
             income: userData.income || '',
-            expense: userData.expense || '',
             accessdate: userData.dashboardaccessdate || '',
-            //   userstatus: userData.userstatus || '',
             username: userData.userName || '',
         });
         setSelectedId(userData._id); // Set the selected row's _id for update
@@ -104,12 +112,10 @@ export default function Employee() {
 
         const payload = {
             person: formData.person,
-            categories: formData.categories,
             income: formData.income,
-            expense: formData.expense,
             dashboardaccessdate: formData.accessdate,
             userName: formData.username,
-            _id: selectedId // use the stored _id
+            _id: selectedId 
         };
 
         // console.log(payload, "Submitting payload");
@@ -142,9 +148,7 @@ export default function Employee() {
     const resetForm = () => {
         setFormData({
             person: '',
-            categories: '',
             income: '',
-            expense: '',
             accessdate: '',
             username: ''
         });
