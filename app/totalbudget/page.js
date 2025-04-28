@@ -255,43 +255,6 @@ export default function Employee() {
                     <div className="card">
                         <div className="card-body" id="dataholdlist">
                             {renderContent()}
-                            {/* {loading ? (
-    <div className="text-center mt-4">
-        <Spin size="large" tip="Loading Monthly Budget..." />
-    </div>
-) : rowData.length === 0 ? (
-    <p className="text-center mt-4 zero">No Monthly Budget available for Signed-in User Name</p>
-) : (
-    <div className="ag-theme-alpine" style={{ height: "80vh", width: "100%" }}>
-        <div style={containerStyle}>
-            <div style={gridStyle}>
-                <AgGridReact
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    pagination={true}
-                    paginationPageSize={2}
-                    getRowHeight={(params) => {
-                        if (params.node.rowPinned) {
-                            return 50;
-                        }
-                        return 65;
-                    }}
-                    pinnedBottomRowData={[
-                        {
-                            dashboardaccessdate: 'Total',
-                            categories: '',
-                            expense: rowData.reduce((sum, row) => sum + (parseFloat(row.expense) || 0), 0),
-                            income: rowData.reduce((sum, row) => sum + (parseFloat(row.income) || 0), 0),
-                        }
-                    ]}
-                    defaultColDef={defaultColDef}
-                />
-            </div>
-        </div>
-    </div>
-)} */}
-
-
                             <footer className="text-center mt-4">
                                 <p>© 2025 Budget Tracker. All rights reserved.</p>
                             </footer>
@@ -337,8 +300,10 @@ export default function Employee() {
                                     dashboardaccessdate: 'Total',
                                     categories: '',
                                     expense: rowData.reduce((sum, row) => sum + (parseFloat(row.expense) || 0), 0),
-                                    income: rowData.reduce((sum, row) => sum + (parseFloat(row.income) || 0), 0),
-                                }
+                                    income: rowData.reduce((sum, row) => {
+                                        const cleanIncome = Number((row.income || '0').toString().replace(/[^0-9.-]+/g, ''));
+                                        return sum + (isNaN(cleanIncome) ? 0 : cleanIncome);
+                                      }, 0).toLocaleString('en-IN'),                                }
                             ]}
                             defaultColDef={defaultColDef}
                         />

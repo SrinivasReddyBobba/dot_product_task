@@ -295,13 +295,19 @@ export default function Employee() {
                                                 }}
                                                 pinnedBottomRowData={[
                                                     {
-                                                        dashboardaccessdate: 'Total',
-                                                        categories: '',
-                                                        expense: rowData.reduce((sum, row) => sum + (parseFloat(row.expense) || 0), 0),
-                                                        income: rowData.reduce((sum, row) => sum + (parseFloat(row.income) || 0), 0),
-
+                                                      dashboardaccessdate: 'Total',
+                                                      categories: '',
+                                                      expense: rowData.reduce((sum, row) => {
+                                                        const cleanExpense = Number((row.expense || '0').toString().replace(/[^0-9.-]+/g, ''));
+                                                        return sum + (isNaN(cleanExpense) ? 0 : cleanExpense);
+                                                      }, 0).toLocaleString('en-IN'),  
+                                                      income: rowData.reduce((sum, row) => {
+                                                        const cleanIncome = Number((row.income || '0').toString().replace(/[^0-9.-]+/g, ''));
+                                                        return sum + (isNaN(cleanIncome) ? 0 : cleanIncome);
+                                                      }, 0).toLocaleString('en-IN'),
                                                     }
-                                                ]}
+                                                  ]}
+                                                  
                                                 defaultColDef={defaultColDef}
                                             />
                                         </div>

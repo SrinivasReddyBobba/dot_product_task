@@ -40,18 +40,23 @@ export default function Mboard() {
                 const bud = budgetData.users;
                 const employee = employeeData.users;
 
-                // console.log(budgetData,employeeData,"both")
-                // console.log(bud,employee,"both1")
                 if (bud && Array.isArray(bud)) {
                     const totalBudgetCalc = bud.reduce((sum, item) => {
-                        return sum + (parseFloat(item.income) || 0);
+                        const income = parseFloat((item.income || '0').toString().replace(/,/g, ''));
+                        return sum + (isNaN(income) ? 0 : income);
                     }, 0);
                     setTotalBudget(totalBudgetCalc);
                 }
                 if (employee && Array.isArray(employee)) {
-                    const totalIncomeCalc = employee.reduce((sum, item) => sum + (parseFloat(item.income) || 0), 0);
-                    const totalExpenseCalc = employee.reduce((sum, item) => sum + (parseFloat(item.expense) || 0), 0);
+                    const totalIncomeCalc = employee.reduce((sum, item) => {
+                        const income = parseFloat((item.income || '0').toString().replace(/,/g, ''));
+                        return sum + (isNaN(income) ? 0 : income);
+                    }, 0);
 
+                    const totalExpenseCalc = employee.reduce((sum, item) => {
+                        const income = parseFloat((item.expense || '0').toString().replace(/,/g, ''));
+                        return sum + (isNaN(income) ? 0 : income);
+                    }, 0);
                     setTotalIncome(totalIncomeCalc);
                     setTotalExpense(totalExpenseCalc);
                 }
@@ -65,7 +70,7 @@ export default function Mboard() {
 
         fetchMainData();
     }, [userName]);
-    // console.log(totalBudget, "totalBudget")
+    console.log(totalBudget, "totalBudget")
     // console.log(totalExpense, "totalExpense")
     // console.log(totalIncome, "totalIncome")
 
