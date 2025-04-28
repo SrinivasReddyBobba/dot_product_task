@@ -79,6 +79,7 @@ export default function Employee() {
             });
 
             if (response.ok) {
+                alert('Added  successfully!');
                 const offcanvasElement = document.getElementById('offcanvasExampleuser');
                 const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
                 offcanvasInstance.hide();

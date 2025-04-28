@@ -64,11 +64,11 @@ export default function Employee() {
     
         const payload = {
             person: formData.person,
-            income: formData.incomeperson,
-            dashboardaccessdate: formData.accessdateperson,
-            userName: formData.usernameperson,
+            income: formData.income,
+            dashboardaccessdate: formData.accessdate,
+            userName: formData.username,
         };
-        // console.log(payload, "pay")
+        console.log(payload, "pay")
         try {
             const response = await fetch("/api/allbudget", {
                 method: 'POST',
@@ -77,7 +77,7 @@ export default function Employee() {
             });
 
             if (response.ok) {
-                // alert('Added  successfully!');
+                alert('Added  successfully!');
                 const offcanvasElement = document.getElementById('offcanvasExampleuser');
                 const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
                 offcanvasInstance.hide();
