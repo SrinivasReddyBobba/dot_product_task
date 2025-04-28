@@ -5,11 +5,14 @@ import Sidebar from "../headbar/headside/page";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { Spin } from 'antd';
+
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function Employee() {
     const [sidebarToggled, setSidebarToggled] = useState(false);
+    const [loading, setLoading] = useState(true);
     const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
     const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : "";
     // console.log(userName, "check")
@@ -24,8 +27,13 @@ export default function Employee() {
 
     const [rowData, setRowData] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
-
     useEffect(() => {
+
+
+        setTimeout(() => {
+            fetchUserData();
+            setLoading(false);
+        }, 1000);
         fetchUserData();
     }, []);
 
@@ -66,7 +74,9 @@ export default function Employee() {
             });
 
             if (response.ok) {
-                // alert('User added successfully!');
+                const offcanvasElement = document.getElementById('offcanvasExampleuser');
+                const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                offcanvasInstance.hide();
                 fetchUserData();
                 resetForm();
             } else {
@@ -112,7 +122,10 @@ export default function Employee() {
             //  console.log(response,"check")
 
             if (response.ok) {
-                // alert('User updated successfully!');
+                const offcanvasElement = document.getElementById('updateoffcanvasExampleuser');
+                const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                offcanvasInstance.hide();
+
                 fetchUserData();
                 resetForm();
                 setIsEditMode(false);
@@ -136,7 +149,7 @@ export default function Employee() {
     };
 
     const handleDelete = async (id) => {
-        console.log(id, "iiid")
+        // console.log(id, "iiid")
         if (confirm('Are you sure you want to delete this user?')) {
             try {
                 const response = await fetch("/api/userdatadelete", {
@@ -258,7 +271,11 @@ export default function Employee() {
                     <div className="card">
                         <div className="card-body" id="dataholdlist">
 
-                            {rowData.length === 0 ? (
+                            {loading ? (
+                                <div className="text-center mt-4">
+                                    <Spin size="large" tip="Loading Monthly Budget..." />
+                                </div>
+                            ) : rowData.length === 0 ? (
                                 <p className="text-center mt-4 zero">No Categories List available for Sigin user Name</p>
                             ) : (
                                 <div className="ag-theme-alpine" style={{ height: "80vh", width: "100%" }}>

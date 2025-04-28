@@ -4,15 +4,17 @@ import Topheader from "../headbar/headmain/page";
 import Sidebar from "../headbar/headside/page";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
-// import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { Spin } from 'antd';
+
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 export default function Employee() {
     const [sidebarToggled, setSidebarToggled] = useState(false);
+    const [loading, setLoading] = useState(true);
     const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
     const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : "";
-    console.log(userName, "check")
+    // console.log(userName, "check")
     const [formData, setFormData] = useState({
         person: '',
         income: '',
@@ -22,15 +24,18 @@ export default function Employee() {
     const [rowData, setRowData] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
     useEffect(() => {
-        fetchUserData();
+        setTimeout(() => {
+            fetchUserData();
+            setLoading(false);
+        }, 1000);
     }, []);
+
     const fetchUserData = async () => {
         try {
             const response = await fetch(`/api/allbudgetget?userName=${userName}`);
-            console.log(userName, "inside")
+            // console.log(userName, "inside")
             if (!response.ok) throw new Error('Failed to fetch user data');
             const data = await response.json();
-            console.log(data, "ui get")
             setRowData(data.users || []);
         } catch (error) {
             console.error('Error fetching user data:', error);
@@ -51,7 +56,7 @@ export default function Employee() {
             income: formData.income,
             dashboardaccessdate: formData.accessdate,
         };
-        console.log(payload, "pay")
+        // console.log(payload, "pay")
         try {
             const response = await fetch("/api/allbudget", {
                 method: 'POST',
@@ -60,7 +65,10 @@ export default function Employee() {
             });
 
             if (response.ok) {
-                // alert('User added successfully!');
+
+                const offcanvasElement = document.getElementById('offcanvasExampleuser');
+                const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                offcanvasInstance.hide();
                 fetchUserData();
                 resetForm();
             } else {
@@ -99,6 +107,8 @@ export default function Employee() {
             //   userstatus: formData.userstatus,
         };
 
+        // console.log(payload, "payloads")
+
         try {
             const response = await fetch("/api/budgetdataupdation", {
                 method: 'PUT',
@@ -107,7 +117,9 @@ export default function Employee() {
             });
 
             if (response.ok) {
-                // alert('User updated successfully!');
+                const offcanvasElement = document.getElementById('updateoffcanvasExampleuser');
+                const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                offcanvasInstance.hide();
                 fetchUserData();
                 resetForm();
                 setIsEditMode(false);
@@ -128,17 +140,17 @@ export default function Employee() {
     };
 
     const handleDelete = async (id) => {
-        console.log(id, "iiid")
+        // console.log(id, "calltotal")
         if (confirm('Are you sure you want to delete this user?')) {
             try {
-                const response = await fetch("/api/userdatadelete", {
+                const response = await fetch("/api/budgetdelete", {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ _id: id }),
                 });
                 if (response.ok) {
                     alert('User deleted successfully!');
-                    fetchUserData(); // refresh table
+                    fetchUserData();
                 } else {
                     alert('Failed to delete user.');
                 }
@@ -150,34 +162,34 @@ export default function Employee() {
     };
     const editButtonRenderer = (params) => {
         if (params.node.rowPinned) {
-          return null; // hide button if it's pinned row
+            return null; // hide button if it's pinned row
         }
         return (
             <button
-            className="btn btn-primary btn-sm"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#updateoffcanvasExampleuser"
-            aria-controls="updateoffcanvasExampleuser"
-            onClick={() => handleEdit(params.data)}
-        >
-            Edit
-        </button>
+                className="btn btn-primary btn-sm"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#updateoffcanvasExampleuser"
+                aria-controls="updateoffcanvasExampleuser"
+                onClick={() => handleEdit(params.data)}
+            >
+                Edit
+            </button>
         );
-      };
+    };
 
-      const Deleted = (params) => {
+    const Deleted = (params) => {
         if (params.node.rowPinned) {
-          return null; // hide button if it's pinned row
+            return null; // hide button if it's pinned row
         }
         return (
-          <button
-            className="btn btn-danger btn-sm"
-            onClick={() => handleDelete(params.data._id)}
-          >
-            Delete
-          </button>
+            <button
+                className="btn btn-danger btn-sm"
+                onClick={() => handleDelete(params.data._id)}
+            >
+                Delete
+            </button>
         );
-      };
+    };
     const [columnDefs] = useState([
         { headerName: "BG_RELEASE_NAME", field: "person", sortable: true, filter: true },
         { headerName: "Access Date", field: "dashboardaccessdate", sortable: true, filter: true },
@@ -242,40 +254,44 @@ export default function Employee() {
 
                     <div className="card">
                         <div className="card-body" id="dataholdlist">
+                            {renderContent()}
+                            {/* {loading ? (
+    <div className="text-center mt-4">
+        <Spin size="large" tip="Loading Monthly Budget..." />
+    </div>
+) : rowData.length === 0 ? (
+    <p className="text-center mt-4 zero">No Monthly Budget available for Signed-in User Name</p>
+) : (
+    <div className="ag-theme-alpine" style={{ height: "80vh", width: "100%" }}>
+        <div style={containerStyle}>
+            <div style={gridStyle}>
+                <AgGridReact
+                    rowData={rowData}
+                    columnDefs={columnDefs}
+                    pagination={true}
+                    paginationPageSize={2}
+                    getRowHeight={(params) => {
+                        if (params.node.rowPinned) {
+                            return 50;
+                        }
+                        return 65;
+                    }}
+                    pinnedBottomRowData={[
+                        {
+                            dashboardaccessdate: 'Total',
+                            categories: '',
+                            expense: rowData.reduce((sum, row) => sum + (parseFloat(row.expense) || 0), 0),
+                            income: rowData.reduce((sum, row) => sum + (parseFloat(row.income) || 0), 0),
+                        }
+                    ]}
+                    defaultColDef={defaultColDef}
+                />
+            </div>
+        </div>
+    </div>
+)} */}
 
-                            {rowData.length === 0 ? (
-                                <p className="text-center mt-4 zero">No Monthly Budget available for Sigin user Name</p>
-                            ) : (
-                                <div className="ag-theme-alpine" style={{ height: "80vh", width: "100%" }}>
 
-                                    <div style={containerStyle}>
-                                        <div style={gridStyle}>
-                                            <AgGridReact
-                                                rowData={rowData}
-                                                columnDefs={columnDefs}
-                                                pagination={true}
-                                                paginationPageSize={2}
-                                                getRowHeight={(params) => {
-                                                    if (params.node.rowPinned) {
-                                                        return 50;
-                                                    }
-                                                    return 65;
-                                                }}
-                                                pinnedBottomRowData={[
-                                                    {
-                                                        dashboardaccessdate: 'Total',
-                                                        categories: '',
-                                                        expense: rowData.reduce((sum, row) => sum + (parseFloat(row.expense) || 0), 0),
-                                                        income: rowData.reduce((sum, row) => sum + (parseFloat(row.income) || 0), 0),
-
-                                                    }
-                                                ]}
-                                                defaultColDef={defaultColDef}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                             <footer className="text-center mt-4">
                                 <p>© 2025 Budget Tracker. All rights reserved.</p>
                             </footer>
@@ -285,6 +301,53 @@ export default function Employee() {
             </div>
         </>
     );
+
+    function renderContent() {
+        if (loading) {
+            return (
+                <div className="text-center mt-4">
+                    <Spin size="large" tip="Loading Monthly Budget..." />
+                </div>
+            );
+        }
+
+        if (rowData.length === 0) {
+            return (
+                <p className="text-center mt-4 zero">No Monthly Budget available for Signed-in User Name</p>
+            );
+        }
+
+        return (
+            <div className="ag-theme-alpine" style={{ height: "80vh", width: "100%" }}>
+                <div style={containerStyle}>
+                    <div style={gridStyle}>
+                        <AgGridReact
+                            rowData={rowData}
+                            columnDefs={columnDefs}
+                            pagination={true}
+                            paginationPageSize={2}
+                            getRowHeight={(params) => {
+                                if (params.node.rowPinned) {
+                                    return 50;
+                                }
+                                return 65;
+                            }}
+                            pinnedBottomRowData={[
+                                {
+                                    dashboardaccessdate: 'Total',
+                                    categories: '',
+                                    expense: rowData.reduce((sum, row) => sum + (parseFloat(row.expense) || 0), 0),
+                                    income: rowData.reduce((sum, row) => sum + (parseFloat(row.income) || 0), 0),
+                                }
+                            ]}
+                            defaultColDef={defaultColDef}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
 
     function renderForm() {
         return (

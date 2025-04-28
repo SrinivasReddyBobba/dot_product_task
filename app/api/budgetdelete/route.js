@@ -1,4 +1,4 @@
-// app/api/userdatadelete/route.js
+
 import { MongoClient, ObjectId } from 'mongodb';
 
 const uri = process.env.MONGO_DB;
@@ -19,7 +19,7 @@ export async function DELETE(req) {
         }
         await client.connect();
         const db = client.db("BUDGET-TRACKER");
-        const usersCollection = db.collection("Add_Items");
+        const usersCollection = db.collection("Add_Budget");
         const result = await usersCollection.deleteOne({ _id: new ObjectId(_id) });
         if (result.deletedCount === 0) {
             return new Response(

@@ -1435,3 +1435,8 @@ span.ag-icon ag-icon-menu-alt::after{
 .zero{
   color:red;
 }
+.spinner{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
