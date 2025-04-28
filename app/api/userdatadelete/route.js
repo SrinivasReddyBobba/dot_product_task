@@ -10,7 +10,7 @@ export async function DELETE(req) {
             client = new MongoClient(uri);
         }
         const { _id } = await req.json();
-        console.log("_id to delete:", _id);
+        // console.log("_id to delete:", _id);
         if (!_id) {
             return new Response(
                 JSON.stringify({ error: "Missing _id in request body" }),

@@ -14,7 +14,8 @@ export default function Employee() {
     const [loading, setLoading] = useState(true);
     const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
     const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : "";
-    // console.log(userName, "check")
+    const [selectedId, setSelectedId] = useState(null);
+    // console.log(selectedId, "check")
     const [formData, setFormData] = useState({
         person: '',
         income: '',
@@ -80,6 +81,8 @@ export default function Employee() {
         }
     };
 
+
+
     const handleEdit = (userData) => {
         setIsEditMode(true);
         setFormData({
@@ -91,6 +94,8 @@ export default function Employee() {
             //   userstatus: userData.userstatus || '',
             username: userData.userName || '',
         });
+        setSelectedId(userData._id); // Set the selected row's _id for update
+        setIsEditMode(true);
         document.getElementById('updateoffcanvasExampleuser').classList.add('show');
     };
 
@@ -104,10 +109,10 @@ export default function Employee() {
             expense: formData.expense,
             dashboardaccessdate: formData.accessdate,
             userName: formData.username,
-            //   userstatus: formData.userstatus,
+            _id: selectedId // use the stored _id
         };
 
-        // console.log(payload, "payloads")
+        // console.log(payload, "Submitting payload");
 
         try {
             const response = await fetch("/api/budgetdataupdation", {
@@ -117,12 +122,15 @@ export default function Employee() {
             });
 
             if (response.ok) {
+                // console.log("Update successful");
                 const offcanvasElement = document.getElementById('updateoffcanvasExampleuser');
                 const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
                 offcanvasInstance.hide();
-                fetchUserData();
-                resetForm();
+
+                fetchUserData(); // Reload data
+                resetForm();     // Clear form fields
                 setIsEditMode(false);
+                setSelectedId(null); // Clear after updating
             } else {
                 alert('Failed to update user.');
             }
@@ -134,11 +142,14 @@ export default function Employee() {
     const resetForm = () => {
         setFormData({
             person: '',
+            categories: '',
             income: '',
+            expense: '',
             accessdate: '',
+            username: ''
         });
+        setSelectedId(null);
     };
-
     const handleDelete = async (id) => {
         // console.log(id, "calltotal")
         if (confirm('Are you sure you want to delete this user?')) {
@@ -161,6 +172,7 @@ export default function Employee() {
         }
     };
     const editButtonRenderer = (params) => {
+        // console.log(params.data,"dhdnd")
         if (params.node.rowPinned) {
             return null; // hide button if it's pinned row
         }
@@ -303,7 +315,8 @@ export default function Employee() {
                                     income: rowData.reduce((sum, row) => {
                                         const cleanIncome = Number((row.income || '0').toString().replace(/[^0-9.-]+/g, ''));
                                         return sum + (isNaN(cleanIncome) ? 0 : cleanIncome);
-                                      }, 0).toLocaleString('en-IN'),                                }
+                                    }, 0).toLocaleString('en-IN'),
+                                }
                             ]}
                             defaultColDef={defaultColDef}
                         />

@@ -13,6 +13,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export default function Employee() {
     const [sidebarToggled, setSidebarToggled] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [selectedId, setSelectedId] = useState(null);
     const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
     const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : "";
     // console.log(userName, "check")
@@ -96,10 +97,13 @@ export default function Employee() {
             income: userData.income || '',
             expense: userData.expense || '',
             accessdate: userData.dashboardaccessdate || '',
-            //   userstatus: userData.userstatus || '',
         });
+        setSelectedId(userData._id);
+        setIsEditMode(true);
         document.getElementById('updateoffcanvasExampleuser').classList.add('show');
     };
+
+
 
     const handleUpdateSubmit = async (e) => {
         e.preventDefault();
@@ -110,9 +114,8 @@ export default function Employee() {
             income: formData.income,
             expense: formData.expense,
             dashboardaccessdate: formData.accessdate,
-            //   userstatus: formData.userstatus,
+            _id: selectedId
         };
-
         try {
             const response = await fetch("/api/userdataupdation", {
                 method: 'PUT',
@@ -129,6 +132,7 @@ export default function Employee() {
                 fetchUserData();
                 resetForm();
                 setIsEditMode(false);
+                setSelectedId(null);
             } else {
                 alert('Failed to update user.');
             }
@@ -136,7 +140,6 @@ export default function Employee() {
             console.error('Error updating user:', error);
         }
     };
-
     const resetForm = () => {
         setFormData({
             username: userName || '',
@@ -295,19 +298,19 @@ export default function Employee() {
                                                 }}
                                                 pinnedBottomRowData={[
                                                     {
-                                                      dashboardaccessdate: 'Total',
-                                                      categories: '',
-                                                      expense: rowData.reduce((sum, row) => {
-                                                        const cleanExpense = Number((row.expense || '0').toString().replace(/[^0-9.-]+/g, ''));
-                                                        return sum + (isNaN(cleanExpense) ? 0 : cleanExpense);
-                                                      }, 0).toLocaleString('en-IN'),  
-                                                      income: rowData.reduce((sum, row) => {
-                                                        const cleanIncome = Number((row.income || '0').toString().replace(/[^0-9.-]+/g, ''));
-                                                        return sum + (isNaN(cleanIncome) ? 0 : cleanIncome);
-                                                      }, 0).toLocaleString('en-IN'),
+                                                        dashboardaccessdate: 'Total',
+                                                        categories: '',
+                                                        expense: rowData.reduce((sum, row) => {
+                                                            const cleanExpense = Number((row.expense || '0').toString().replace(/[^0-9.-]+/g, ''));
+                                                            return sum + (isNaN(cleanExpense) ? 0 : cleanExpense);
+                                                        }, 0).toLocaleString('en-IN'),
+                                                        income: rowData.reduce((sum, row) => {
+                                                            const cleanIncome = Number((row.income || '0').toString().replace(/[^0-9.-]+/g, ''));
+                                                            return sum + (isNaN(cleanIncome) ? 0 : cleanIncome);
+                                                        }, 0).toLocaleString('en-IN'),
                                                     }
-                                                  ]}
-                                                  
+                                                ]}
+
                                                 defaultColDef={defaultColDef}
                                             />
                                         </div>
